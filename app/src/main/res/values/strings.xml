@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GifApp</string>
     <string name="no_internet_connection">No internet connection. Offline mode: ON</string>
+    <string name="long_click_to_delete_item">Long click to delete item</string>
 </resources>
