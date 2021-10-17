@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -30,6 +29,8 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     private lateinit var adapter: GifListAdapter
 
+    private var isSearchEnabled = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_gif_list, container, false)
         return binding.root
@@ -46,12 +47,15 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
         binding
             .etSearch
             .textChanges()
-            .debounce(500,  TimeUnit.MILLISECONDS)
+            .debounce(1000,  TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                adapter.clearGifList()
-                viewModel.getGifs(it.toString(), 0)
+                if (isSearchEnabled) {
+                    adapter.clearGifList()
+                    viewModel.getGifs(it.toString(), 0)
+                }
+                isSearchEnabled = true
             }
 
         gifsObserver = Observer { adapter.notifyItemInserted(adapter.itemCount) }
@@ -73,5 +77,6 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     override fun onStop() {
         super.onStop()
         viewModel.gifsData.removeObserver(gifsObserver)
+        isSearchEnabled = false
     }
 }

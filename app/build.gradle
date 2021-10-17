@@ -22,6 +22,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_URL", '"https://api.giphy.com/"'
+        buildConfigField "String", "CACHE_DIR", '"/gif_app_cache/"'
         buildConfigField "String", "API_KEY", '"DLzXuwsja9U99jjScpc4kiUhgnXbN6lh"'
     }
 
@@ -91,6 +92,5 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
 
     implementation 'com.github.pwittchen:reactivenetwork-rx2:3.0.8'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'com.mindorks.android:prdownloader:0.6.0'
 }

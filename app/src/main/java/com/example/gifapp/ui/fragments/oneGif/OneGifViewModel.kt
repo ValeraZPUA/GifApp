@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.gifapp.App
+import com.example.gifapp.BuildConfig
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.utils.DataManager
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class OneGifViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         App.appComponent.inject(this)
-        dataManager.initRequiredData(_gifsData, app.cacheDir.absolutePath + "/gif_app_cache/")
+        dataManager.initRequiredData(_gifsData, app.cacheDir.absolutePath + BuildConfig.CACHE_DIR)
     }
 
     fun getGifsList(): ArrayList<GifItemEntity> {
