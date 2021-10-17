@@ -63,7 +63,6 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     }
 
     override fun onItemLongClick(gifId: String) {
-        Toast.makeText(context, gifId, Toast.LENGTH_SHORT).show()
         viewModel.setDeleted(gifId)
     }
 

@@ -15,6 +15,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import java.io.File
 import javax.inject.Inject
 
 @SuppressLint("CheckResult")
@@ -102,18 +103,33 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
             .subscribeOn(Schedulers.io())
             .subscribe {
                 gifList.forEach {
-                    PRDownloader
-                        .download(it.image_url, dirPath, "${it.id}.gif")
-                        .build()
-                        .start(object : OnDownloadListener {
-                            override fun onDownloadComplete() {
+                    database
+                        .gifItemDao()
+                        .isGifDeleted(it.id)
+                        .subscribe(object : DisposableSingleObserver<Boolean>() {
+                            override fun onSuccess(isDeleted: Boolean) {
+                                if (!isDeleted) {
+                                    downloadGifTOInternalStorage(it.image_url, dirPath, "${it.id}.gif")
+                                }
                             }
 
-                            override fun onError(error: Error?) {
+                            override fun onError(e: Throwable) {
+                                downloadGifTOInternalStorage(it.image_url, dirPath, "${it.id}.gif")
                             }
                         })
                 }
             }
+    }
+
+    private fun downloadGifTOInternalStorage(imageUrl: String, dirPath: String, fileName: String) {
+        PRDownloader
+            .download(imageUrl, dirPath, fileName)
+            .build()
+            .start(object : OnDownloadListener {
+                override fun onDownloadComplete() { }
+
+                override fun onError(error: Error?) { }
+            })
     }
 
     private fun addGifList(gifList: ArrayList<GifItemEntity>) {
@@ -160,5 +176,18 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
             .subscribe {
                 database.gifItemDao().setGifDeleted(true, it)
             }
+        Observable
+            .just(gifId)
+            .subscribeOn(Schedulers.io())
+            .subscribe {
+                val path = "$dirPath$gifId.gif"
+                Log.d("tag22", "setDeleted: $path")
+                val file = File("$dirPath$gifId.gif")
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
+
+
     }
 }
