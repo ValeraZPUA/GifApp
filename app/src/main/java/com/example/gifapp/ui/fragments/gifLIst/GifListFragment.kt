@@ -1,7 +1,6 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,10 +38,10 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = GifListAdapter(arrayListOf(), this, this, this)
-        binding.rvGifs.adapter = adapter
-
         viewModel = ViewModelProvider(this).get(GifListViewModel::class.java)
+
+        adapter = GifListAdapter(viewModel.getGifList(), this, this, this)
+        binding.rvGifs.adapter = adapter
 
         binding
             .etSearch
@@ -55,16 +54,11 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
                 viewModel.getGifs(it.toString(), 0)
             }
 
-        gifsObserver = Observer { gifsList ->  gifsList?.let { addGifs(it) } }
+        gifsObserver = Observer { adapter.notifyItemInserted(adapter.itemCount) }
         viewModel.gifsData.observe(requireActivity(), gifsObserver)
     }
 
-    private fun addGifs(gifsList: ArrayList<GifItemEntity>) {
-        adapter.addItems(gifsList)
-    }
-
-    override fun onBottomReached(itemQuantity: Int) {
-        Log.d("tag22", "onBottomReached: ")
+    override fun onBottomReached() {
         viewModel.getGifs(null, null)
     }
 

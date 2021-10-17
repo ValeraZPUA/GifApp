@@ -18,23 +18,23 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @SuppressLint("CheckResult")
-class DataManager(private val _gifsData: MutableLiveData<ArrayList<GifItemEntity>>,
-                  private val dirPath: String) {
+class DataManager @Inject constructor(private val apiInterface: ApiInterface,
+                                      private val database: AppDatabase,
+                                      private val stateRepository: StateRepository) {
 
-    @Inject
-    lateinit var apiInterface: ApiInterface
-    @Inject
-    lateinit var database: AppDatabase
-    @Inject
-    lateinit var stateRepository: StateRepository
+    private lateinit var _gifsData: MutableLiveData<ArrayList<GifItemEntity>>
+    private lateinit var dirPath: String
 
     init {
-        Log.d("tag22", "init data manager")
         App.appComponent.inject(this)
     }
 
+    fun initRequiredData(gifsLivaData: MutableLiveData<ArrayList<GifItemEntity>>, dirPathToDownload: String) {
+        _gifsData = gifsLivaData
+        dirPath = dirPathToDownload
+    }
+
     fun getGifList(): ArrayList<GifItemEntity> {
-        Log.d("tag22", "getGifList: ")
         return stateRepository.getGigList()
     }
 
@@ -118,25 +118,31 @@ class DataManager(private val _gifsData: MutableLiveData<ArrayList<GifItemEntity
 
     private fun addGifList(gifList: ArrayList<GifItemEntity>) {
         if (gifList.isNotEmpty()) {
-            gifList.forEach {
+            for (i in 0 until gifList.size) {
                 database
                     .gifItemDao()
-                    .isGifDeleted(it.id)
+                    .isGifDeleted(gifList[i].id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(object : DisposableSingleObserver<Boolean>() {
                         override fun onSuccess(isDeleted: Boolean) {
                             if (isDeleted) {
-                                it.is_deleted = true
+                                gifList[i].is_deleted = true
                             }
 
-                            if (gifList.last().id == it.id) {
+                            if (gifList.lastIndex == i) {
+                                _gifsData.postValue(gifList)
+                                stateRepository.addGifs(gifList)
+                            }
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            if (gifList.lastIndex == i) {
                                 _gifsData.postValue(gifList)
                                 stateRepository.addGifs(gifList)
                             }
                         }
-
-                        override fun onError(e: Throwable) { }
                     })
             }
         }

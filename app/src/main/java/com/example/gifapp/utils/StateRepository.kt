@@ -19,11 +19,11 @@ class StateRepository {
     private var isInterConnected = true
 
     init {
-        ReactiveNetwork
+       /* ReactiveNetwork
             .observeInternetConnectivity()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::setIsInternetConnected)
+            .subscribe(this::setIsInternetConnected)*/
     }
 
     @Singleton
@@ -34,7 +34,6 @@ class StateRepository {
 
     fun addGifs(newGifList: ArrayList<GifItemEntity>) {
         gifList.addAll(newGifList)
-        Log.d("tag22", "GifList Repo Size: ${gifList.size}")
     }
 
     fun setKeyWord(newKeyWord: String) {

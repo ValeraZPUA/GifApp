@@ -23,18 +23,14 @@ class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         if (position == itemCount - 1) {
-            onBottomReachedListener.onBottomReached(itemCount)
+            onBottomReachedListener.onBottomReached()
         }
+
         holder.bind(gifsList[position])
     }
 
     override fun getItemCount(): Int {
         return gifsList.size
-    }
-
-    fun addItems(newGifList: ArrayList<GifItemEntity>) {
-        gifsList.addAll(newGifList)
-        notifyItemInserted(0)
     }
 
     fun clearGifList() {
