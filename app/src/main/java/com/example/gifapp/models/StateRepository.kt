@@ -1,7 +1,6 @@
-package com.example.gifapp.utils
+package com.example.gifapp.models
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.example.gifapp.db.entities.GifItemEntity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import dagger.Module
@@ -19,11 +18,11 @@ class StateRepository {
     private var isInterConnected = true
 
     init {
-       /* ReactiveNetwork
+        ReactiveNetwork
             .observeInternetConnectivity()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::setIsInternetConnected)*/
+            .subscribe(this::setIsInternetConnected)
     }
 
     @Singleton

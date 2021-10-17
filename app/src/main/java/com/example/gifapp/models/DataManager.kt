@@ -1,7 +1,6 @@
-package com.example.gifapp.utils
+package com.example.gifapp.models
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.downloader.Error
 import com.downloader.OnDownloadListener
@@ -39,19 +38,20 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         return stateRepository.getGigList()
     }
 
-    fun getGifs(keyWord: String?, offset: Int?) {
+    fun getIsInternetConnected(): Boolean{
+        return stateRepository.getIsInternetConnected()
+    }
+
+    fun getGifs(keyWord: String?, offset: Int?, isInternetConnected: Boolean) {
         if (keyWord != null) {
             stateRepository.setKeyWord(keyWord)
             stateRepository.getGigList().clear()
         }
 
-        if (stateRepository.getIsInternetConnected()) {
-
-            Log.d("tag22", "getGifs, REQUEST: ${keyWord ?: stateRepository.getKeyWord()} ${offset ?: stateRepository.getOffset()}")
-
+        if (isInternetConnected) {
             apiInterface
                 .getGifs(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
-                .map { it -> convertToDBEntity(it.data)}
+                .map { convertToDBEntity(it.data)}
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ gifList -> addGifList(gifList)
@@ -71,10 +71,12 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                         }
 
                         override fun onError(p0: Throwable) {
-
+                            addGifList(ArrayList())
                         }
 
                     })
+            } else {
+                addGifList(ArrayList())
             }
         }
     }
@@ -166,7 +168,6 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
     private fun parseError(error: Throwable) {
         //TODO
-        Log.d("tag22", error.message.toString())
     }
 
     fun setDeleted(gifId: String) {
@@ -180,14 +181,10 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
             .just(gifId)
             .subscribeOn(Schedulers.io())
             .subscribe {
-                val path = "$dirPath$gifId.gif"
-                Log.d("tag22", "setDeleted: $path")
                 val file = File("$dirPath$gifId.gif")
                 if (file.exists()) {
                     file.delete()
                 }
             }
-
-
     }
 }
