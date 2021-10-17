@@ -1,6 +1,5 @@
 package com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -12,6 +11,7 @@ import com.example.gifapp.db.entities.GifItemEntity
 
 class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
                      private val onBottomReachedListener: OnBottomReachedListener,
+                     private val onItemLongClickListener: OnItemLongClickListener,
                      private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<GifListAdapter.GifViewHolder>() {
 
     private lateinit var binding: RvItemGifBinding
@@ -51,13 +51,15 @@ class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
 
         init {
             itemView.setOnLongClickListener {
-                onItemClickListener.onItemLongClick(gifsList[bindingAdapterPosition].id)
+                onItemLongClickListener.onItemLongClick(gifsList[bindingAdapterPosition].id)
                 deleteItemByPosition(bindingAdapterPosition)
+            }
+            itemView.setOnClickListener {
+                onItemClickListener.onItemClick(bindingAdapterPosition)
             }
         }
 
         fun bind(gifItemEntity: GifItemEntity) {
-            Log.d("tag22", "bind, gifItemEntity.is_deleted: ${gifItemEntity.id} ${gifItemEntity.is_deleted}")
             if (!gifItemEntity.is_deleted) {
 
                 Glide

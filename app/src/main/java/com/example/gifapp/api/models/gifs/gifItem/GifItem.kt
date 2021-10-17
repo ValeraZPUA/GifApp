@@ -4,5 +4,5 @@ class GifItem(
     val id: String,
     val title: String,
     val images: ImagesData,
-    var isDeleted:Boolean = false
+    var isDeleted: Boolean = false
 )

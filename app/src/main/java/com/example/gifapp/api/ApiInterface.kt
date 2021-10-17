@@ -11,7 +11,7 @@ interface ApiInterface {
     @GET("v1/gifs/search")
     fun getGifs(@Query("q") keyWord: String,
                 @Query("offset") offset: Int,
-                @Query("limit") itemQuantityToGet: Int = 10,
+                @Query("limit") itemQuantityToGet: Int = 4,
                 @Query("api_key") apiKey: String = BuildConfig.API_KEY): Observable<GifsListResponse>
 
 }

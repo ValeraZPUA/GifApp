@@ -9,10 +9,19 @@
         android:id="@+id/gifListFragment"
         android:name="com.example.gifapp.ui.fragments.gifLIst.GifListFragment"
         android:label="fragment_gif_list"
-        tools:layout="@layout/fragment_gif_list" />
+        tools:layout="@layout/fragment_gif_list" >
+        <action
+            android:id="@+id/action_gifListFragment_to_oneGifFragment"
+            app:destination="@id/oneGifFragment" />
+    </fragment>
     <fragment
         android:id="@+id/oneGifFragment"
-        android:name="com.example.gifapp.ui.fragments.OneGifFragment"
+        android:name="com.example.gifapp.ui.fragments.oneGif.OneGifFragment"
         android:label="fragment_one_gif"
-        tools:layout="@layout/fragment_one_gif" />
+        tools:layout="@layout/fragment_one_gif" >
+        <argument
+            android:name="gifItemPosition"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

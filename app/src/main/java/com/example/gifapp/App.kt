@@ -7,6 +7,7 @@ import com.example.gifapp.di.AppComponent
 import com.example.gifapp.di.DaggerAppComponent
 import com.example.gifapp.di.modules.DatabaseModule
 import com.example.gifapp.di.modules.NetworkModule
+import com.example.gifapp.utils.StateRepository
 
 class App : Application() {
 
@@ -23,6 +24,7 @@ class App : Application() {
         appComponent = DaggerAppComponent.builder()
             .networkModule(NetworkModule())
             .databaseModule(DatabaseModule(this))
+            .stateRepository(StateRepository())
             .build()
     }
 }
