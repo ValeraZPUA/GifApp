@@ -3,14 +3,10 @@ package com.example.gifapp.models
 import android.annotation.SuppressLint
 import com.example.gifapp.db.entities.GifItemEntity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
-import dagger.Module
-import dagger.Provides
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Singleton
 
 @SuppressLint("CheckResult")
-@Module
 class StateRepository {
 
     private var previousKeyWord: String = ""
@@ -24,13 +20,6 @@ class StateRepository {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(this::setIsInternetConnected)
     }
-
-    @Singleton
-    @Provides
-    fun initStateRepo(): StateRepository {
-        return this
-    }
-
     fun addGifs(newGifList: ArrayList<GifItemEntity>) {
         gifList.addAll(newGifList)
     }

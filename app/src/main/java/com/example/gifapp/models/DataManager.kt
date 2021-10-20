@@ -16,14 +16,16 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 @SuppressLint("CheckResult")
 class DataManager @Inject constructor(private val apiInterface: ApiInterface,
-                                      private val database: AppDatabase,
-                                      private val stateRepository: StateRepository) {
+                                      private val database: AppDatabase) {
 
     private lateinit var _gifsData: MutableLiveData<ArrayList<GifItemEntity>>
     private lateinit var dirPath: String
+    private var stateRepository = StateRepository()
 
     init {
         App.appComponent.inject(this)
@@ -38,7 +40,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         return stateRepository.getGigList()
     }
 
-    fun getIsInternetConnected(): Boolean{
+    fun getIsInternetConnected(): Boolean {
         return stateRepository.getIsInternetConnected()
     }
 

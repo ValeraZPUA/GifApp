@@ -5,7 +5,6 @@ import com.example.gifapp.di.modules.DatabaseModule
 import com.example.gifapp.di.modules.NetworkModule
 import com.example.gifapp.ui.fragments.gifLIst.GifListViewModel
 import com.example.gifapp.ui.fragments.oneGif.OneGifViewModel
-import com.example.gifapp.models.StateRepository
 import dagger.Component
 import javax.inject.Singleton
 
@@ -13,8 +12,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         NetworkModule::class,
-        DatabaseModule::class,
-        StateRepository::class
+        DatabaseModule::class
     ]
 )
 
