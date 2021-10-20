@@ -54,7 +54,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
                 isSearchEnabled = true
             }
 
-        viewModel.gifsData.observe(viewLifecycleOwner, { adapter.notifyItemInserted(adapter.itemCount) })
+        viewModel.getGifsData().observe(viewLifecycleOwner, { adapter.notifyItemInserted(adapter.itemCount) })
     }
 
     override fun onBottomReached() {

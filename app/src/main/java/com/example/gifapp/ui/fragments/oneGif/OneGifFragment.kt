@@ -34,7 +34,7 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
         binding.vpGif.adapter = gifPagerAdapter
         binding.vpGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
 
-        viewModel.gifsData.observe(viewLifecycleOwner, { gifPagerAdapter.notifyDataSetChanged() })
+        viewModel.getGifsData().observe(viewLifecycleOwner, { gifPagerAdapter.notifyDataSetChanged() })
     }
 
     override fun onEndReached(offset: Int) {

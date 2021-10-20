@@ -14,16 +14,14 @@ import javax.inject.Inject
 
 class GifListViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    private val _gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
-    val gifsData: LiveData<ArrayList<GifItemEntity>>
-        get() = _gifsData
+    private val gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
 
     @Inject
     lateinit var dataManager: DataManager
 
     init {
         App.appComponent.inject(this)
-        dataManager.initRequiredData(_gifsData, app.cacheDir.absolutePath + BuildConfig.CACHE_DIR)
+        dataManager.initRequiredData(gifsData, app.cacheDir.absolutePath + BuildConfig.CACHE_DIR)
     }
 
     fun getGifs(keyWord: String?, offset: Int?) {
@@ -40,5 +38,9 @@ class GifListViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun getGifList(): java.util.ArrayList<GifItemEntity> {
         return dataManager.getGifList()
+    }
+
+    fun getGifsData(): LiveData<ArrayList<GifItemEntity>> {
+        return gifsData
     }
 }
