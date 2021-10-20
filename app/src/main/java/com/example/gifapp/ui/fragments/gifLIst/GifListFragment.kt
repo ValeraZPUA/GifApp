@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.gifapp.R
 import com.example.gifapp.databinding.FragmentGifListBinding
-import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.GifListAdapter
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.OnBottomReachedListener
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.OnItemClickListener
@@ -25,7 +23,6 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     private lateinit var binding: FragmentGifListBinding
     private lateinit var viewModel: GifListViewModel
-    private lateinit var gifsObserver: Observer<ArrayList<GifItemEntity>>
 
     private lateinit var adapter: GifListAdapter
 
@@ -58,8 +55,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
                 isSearchEnabled = true
             }
 
-        gifsObserver = Observer { adapter.notifyItemInserted(adapter.itemCount) }
-        viewModel.gifsData.observe(requireActivity(), gifsObserver)
+        viewModel.gifsData.observe(viewLifecycleOwner, { adapter.notifyItemInserted(adapter.itemCount) })
     }
 
     override fun onBottomReached() {
@@ -76,7 +72,6 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     override fun onStop() {
         super.onStop()
-        viewModel.gifsData.removeObserver(gifsObserver)
         isSearchEnabled = false
     }
 }

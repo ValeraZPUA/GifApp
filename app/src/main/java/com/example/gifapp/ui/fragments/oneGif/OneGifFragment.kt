@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.gifapp.R
@@ -19,7 +18,6 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
     private lateinit var viewPagerGif: ViewPager
 
     private lateinit var viewModel: OneGifViewModel
-    private lateinit var gifsObserver: Observer<Any>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,16 +36,10 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
         viewPagerGif.adapter = gifPagerAdapter
         viewPagerGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
 
-        gifsObserver = Observer { gifPagerAdapter.notifyDataSetChanged() }
-        viewModel.gifsData.observe(requireActivity(), gifsObserver)
+        viewModel.gifsData.observe(viewLifecycleOwner, { gifPagerAdapter.notifyDataSetChanged() })
     }
 
     override fun onEndReached(offset: Int) {
         viewModel.getGifs(null, offset)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.gifsData.removeObserver(gifsObserver)
     }
 }
