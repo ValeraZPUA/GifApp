@@ -6,24 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager.widget.ViewPager
-import com.example.gifapp.R
+import com.example.gifapp.databinding.FragmentOneGifBinding
 import com.example.gifapp.ui.fragments.oneGif.tools.GifPagerAdapter
 import com.example.gifapp.ui.fragments.oneGif.tools.OnEndOfListReached
-import kotlinx.android.synthetic.main.fragment_one_gif.*
 
 class OneGifFragment : Fragment(), OnEndOfListReached {
 
+    private lateinit var binding: FragmentOneGifBinding
     private lateinit var gifPagerAdapter: GifPagerAdapter
-    private lateinit var viewPagerGif: ViewPager
 
     private lateinit var viewModel: OneGifViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_one_gif, container, false)
+    ): View {
+        binding = FragmentOneGifBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -31,10 +30,9 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
 
         viewModel = ViewModelProvider(this).get(OneGifViewModel::class.java)
 
-        viewPagerGif = vpGif
         gifPagerAdapter = GifPagerAdapter(viewModel.getGifsList(), this)
-        viewPagerGif.adapter = gifPagerAdapter
-        viewPagerGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
+        binding.vpGif.adapter = gifPagerAdapter
+        binding.vpGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
 
         viewModel.gifsData.observe(viewLifecycleOwner, { gifPagerAdapter.notifyDataSetChanged() })
     }

@@ -2,7 +2,6 @@ package com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.gifapp.R
@@ -14,11 +13,8 @@ class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
                      private val onItemLongClickListener: OnItemLongClickListener,
                      private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<GifListAdapter.GifViewHolder>() {
 
-    private lateinit var binding: RvItemGifBinding
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
-        binding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.rv_item_gif, parent, false)
-        return GifViewHolder(binding)
+        return GifViewHolder(RvItemGifBinding.inflate(LayoutInflater.from(parent.context), parent,false))
     }
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {

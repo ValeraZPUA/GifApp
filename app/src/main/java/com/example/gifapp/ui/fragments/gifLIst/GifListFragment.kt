@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.gifapp.R
 import com.example.gifapp.databinding.FragmentGifListBinding
+import com.example.gifapp.databinding.FragmentGifListBinding.inflate
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.GifListAdapter
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.OnBottomReachedListener
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.OnItemClickListener
@@ -29,7 +28,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     private var isSearchEnabled = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_gif_list, container, false)
+        binding = inflate(inflater, container, false)
         return binding.root
     }
 
