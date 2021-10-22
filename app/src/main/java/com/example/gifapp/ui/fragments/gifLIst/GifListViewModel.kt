@@ -1,12 +1,11 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gifapp.db.entities.GifItemEntity
-import com.example.gifapp.models.DataManager
-import com.example.gifapp.models.IDataManager
+import com.example.gifapp.models.dataManager.DataManager
+import com.example.gifapp.models.dataManager.IDataManager
 import javax.inject.Inject
 
 class GifListViewModel @Inject constructor(private val dataManager: DataManager) : ViewModel(), IDataManager {
@@ -43,7 +42,6 @@ class GifListViewModel @Inject constructor(private val dataManager: DataManager)
     }
 
     override fun returnGifList(gifList: ArrayList<GifItemEntity>) {
-        Log.d("tag22", "returnGifList: ")
         gifsData.value = gifList
     }
 }

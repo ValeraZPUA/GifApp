@@ -1,4 +1,4 @@
-package com.example.gifapp.models
+package com.example.gifapp.models.dataManager
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -9,6 +9,7 @@ import com.example.gifapp.api.ApiInterface
 import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
+import com.example.gifapp.models.stateRepository.StateRepository
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -147,7 +148,6 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                             }
 
                             if (gifList.lastIndex == i) {
-                                Log.d("tag22", "onSuccess: ")
                                 iDataManager.returnGifList(gifList)
                                 stateRepository.addGifs(gifList)
                             }

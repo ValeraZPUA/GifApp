@@ -1,4 +1,4 @@
-package com.example.gifapp.models
+package com.example.gifapp.models.stateRepository
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -22,7 +22,6 @@ class StateRepository {
             .subscribe(this::setIsInternetConnected)
     }
     fun addGifs(newGifList: ArrayList<GifItemEntity>) {
-        Log.d("tag22", "addGifs SR: ")
         gifList.addAll(newGifList)
     }
 
@@ -31,7 +30,7 @@ class StateRepository {
     }
 
     fun getGigList(): ArrayList<GifItemEntity> {
-        return gifList
+        return ArrayList(gifList)
     }
 
     fun getOffset(): Int {

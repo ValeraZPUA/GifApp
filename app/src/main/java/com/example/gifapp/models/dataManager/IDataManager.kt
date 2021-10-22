@@ -1,4 +1,4 @@
-package com.example.gifapp.models
+package com.example.gifapp.models.dataManager
 
 import com.example.gifapp.db.entities.GifItemEntity
 
