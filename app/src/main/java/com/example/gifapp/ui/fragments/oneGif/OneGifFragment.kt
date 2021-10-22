@@ -1,6 +1,7 @@
 package com.example.gifapp.ui.fragments.oneGif
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,12 +41,17 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
     }
 
     private fun setObservers() {
-        viewModel.getGifsData().observe(viewLifecycleOwner, { gifPagerAdapter.notifyDataSetChanged() })
+        viewModel.getGifsData().observe(viewLifecycleOwner, {
+            Log.d("tag22", "Observer ${it.size}")
+            Log.d("tag22", "Observer ${gifPagerAdapter.count}")
+            gifPagerAdapter.addItems(it)
+            //gifPagerAdapter.notifyDataSetChanged()
+        })
         viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner, { Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show() })
     }
 
     private fun configViewPager() {
-        gifPagerAdapter = GifPagerAdapter(viewModel.getGifsList(), this)
+        gifPagerAdapter = GifPagerAdapter(ArrayList(viewModel.getGifsList()), this)
         binding.vpGif.adapter = gifPagerAdapter
         binding.vpGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
     }

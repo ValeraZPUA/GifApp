@@ -1,12 +1,12 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.gifapp.App
 import com.example.gifapp.BuildConfig
@@ -64,7 +64,11 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     }
 
     private fun setObservers() {
-        viewModel.getGifsData().observe(viewLifecycleOwner, { adapter.notifyItemInserted(adapter.itemCount) })
+        viewModel.getGifsData().observe(viewLifecycleOwner, {
+            Log.d("tag22", "Observer ")
+            adapter.addItems(it)
+            //adapter.notifyItemInserted(adapter.itemCount)
+        })
         viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner, { Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show() })
     }
 

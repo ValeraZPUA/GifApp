@@ -1,6 +1,7 @@
 package com.example.gifapp.models
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.example.gifapp.db.entities.GifItemEntity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,6 +22,7 @@ class StateRepository {
             .subscribe(this::setIsInternetConnected)
     }
     fun addGifs(newGifList: ArrayList<GifItemEntity>) {
+        Log.d("tag22", "addGifs SR: ")
         gifList.addAll(newGifList)
     }
 

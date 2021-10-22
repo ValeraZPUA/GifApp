@@ -1,13 +1,15 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.DataManager
+import com.example.gifapp.models.IDataManager
 import javax.inject.Inject
 
-class GifListViewModel @Inject constructor(private val dataManager: DataManager) : ViewModel() {
+class GifListViewModel @Inject constructor(private val dataManager: DataManager) : ViewModel(), IDataManager {
 
     private val gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
     private val showInternetConnectionError = MutableLiveData<Boolean>()
@@ -18,10 +20,6 @@ class GifListViewModel @Inject constructor(private val dataManager: DataManager)
             showInternetConnectionError.value = true
         }
         dataManager.getGifs(keyWord, offset, isInternetConnected)
-    }
-
-    fun setDeleted(gifId: String) {
-        dataManager.setDeleted(gifId)
     }
 
     fun getGifList(): ArrayList<GifItemEntity> {
@@ -37,6 +35,15 @@ class GifListViewModel @Inject constructor(private val dataManager: DataManager)
     }
 
     fun initRequiredData(dirPathFromSavingCache: String) {
-        dataManager.initRequiredData(this.gifsData, dirPathFromSavingCache)
+        dataManager.initRequiredData(dirPathFromSavingCache, this)
+    }
+
+    fun setDeleted(gifId: String) {
+        dataManager.setDeleted(gifId)
+    }
+
+    override fun returnGifList(gifList: ArrayList<GifItemEntity>) {
+        Log.d("tag22", "returnGifList: ")
+        gifsData.value = gifList
     }
 }

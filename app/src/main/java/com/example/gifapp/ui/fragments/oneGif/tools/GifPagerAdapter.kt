@@ -48,6 +48,8 @@ class GifPagerAdapter(private val gifList: ArrayList<GifItemEntity>,
 
     }
 
+
+
     override fun getCount(): Int = gifList.size
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
@@ -56,5 +58,11 @@ class GifPagerAdapter(private val gifList: ArrayList<GifItemEntity>,
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View?)
+    }
+
+    fun addItems(newGifsList: ArrayList<GifItemEntity>) {
+        gifList.addAll(newGifsList)
+        notifyDataSetChanged()
+
     }
 }

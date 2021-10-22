@@ -39,6 +39,12 @@ class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
         notifyItemRemoved(position)
         return true
     }
+
+    fun addItems(newGifsList: ArrayList<GifItemEntity>) {
+        gifsList.addAll(newGifsList)
+        notifyDataSetChanged()
+    }
+
     inner class GifViewHolder(private val binding: RvItemGifBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {

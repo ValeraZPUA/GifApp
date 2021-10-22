@@ -1,7 +1,7 @@
 package com.example.gifapp.models
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -9,6 +9,7 @@ import com.example.gifapp.api.ApiInterface
 import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
+import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
@@ -22,13 +23,13 @@ import javax.inject.Singleton
 class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                                       private val database: AppDatabase) {
 
-    private lateinit var _gifsData: MutableLiveData<ArrayList<GifItemEntity>>
     private lateinit var dirPath: String
     private var stateRepository = StateRepository()
+    private lateinit var iDataManager: IDataManager
 
-    fun initRequiredData(gifsLivaData: MutableLiveData<ArrayList<GifItemEntity>>, dirPathToDownload: String) {
-        _gifsData = gifsLivaData
+    fun initRequiredData(dirPathToDownload: String, iDataManager: IDataManager) {
         dirPath = dirPathToDownload
+        this.iDataManager = iDataManager
     }
 
     fun getGifList(): ArrayList<GifItemEntity> {
@@ -146,7 +147,8 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                             }
 
                             if (gifList.lastIndex == i) {
-                                _gifsData.postValue(gifList)
+                                Log.d("tag22", "onSuccess: ")
+                                iDataManager.returnGifList(gifList)
                                 stateRepository.addGifs(gifList)
                             }
 
@@ -154,7 +156,8 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
                         override fun onError(e: Throwable) {
                             if (gifList.lastIndex == i) {
-                                _gifsData.postValue(gifList)
+                                Log.e("tag22", "onError: ${Gson().toJson(e)}" )
+                                iDataManager.returnGifList(gifList)
                                 stateRepository.addGifs(gifList)
                             }
                         }
