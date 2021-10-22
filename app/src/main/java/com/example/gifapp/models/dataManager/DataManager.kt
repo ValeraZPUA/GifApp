@@ -1,7 +1,6 @@
 package com.example.gifapp.models.dataManager
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -10,7 +9,6 @@ import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.stateRepository.StateRepository
-import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
@@ -53,10 +51,8 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                 .map { convertToDBEntity(it.data)}
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ gifList -> addGifList(gifList)
-                    saveToInternalStorage(gifList)
-                    addGifListToDB(gifList)},
-                    { error -> parseError(error) })
+                .subscribe({ gifList -> checkDeletedGifs(gifList) },
+                           { error -> parseError(error) } )
         } else {
             if (keyWord != null && keyWord.isNotBlank()) {
                 database
@@ -78,6 +74,42 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                 addGifList(ArrayList())
             }
         }
+    }
+
+    private fun checkDeletedGifs(gifList: ArrayList<GifItemEntity>) {
+            val gifIdList: ArrayList<String> = arrayListOf()
+                gifList.forEach { gifIdList.add(it.id) }
+
+            database
+                .gifItemDao()
+                .getDeletedGifIdsList(gifIdList, true)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableSingleObserver<List<String>>() {
+                    override fun onSuccess(deletedGifIdList: List<String>) {
+                        addGifListToDB(gifList)
+                        stateRepository.increaseOffset(gifList.size)
+
+                        for (deletedGifId in deletedGifIdList) {
+                            gifList.find { it.id == deletedGifId }?.is_deleted = true
+                        }
+
+                        val filteredGifList: ArrayList<GifItemEntity> = gifList.filter { !it.is_deleted } as ArrayList<GifItemEntity>
+
+                        iDataManager.returnGifList(filteredGifList)
+                        stateRepository.addGifs(filteredGifList)
+                        saveToInternalStorage(filteredGifList)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        addGifListToDB(gifList)
+                        stateRepository.increaseOffset(gifList.size)
+
+                        iDataManager.returnGifList(gifList)
+                        stateRepository.addGifs(gifList)
+                        saveToInternalStorage(gifList)
+                    }
+                })
     }
 
     private fun addGifListToDB(gifList: ArrayList<GifItemEntity>) {
@@ -156,7 +188,6 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
                         override fun onError(e: Throwable) {
                             if (gifList.lastIndex == i) {
-                                Log.e("tag22", "onError: ${Gson().toJson(e)}" )
                                 iDataManager.returnGifList(gifList)
                                 stateRepository.addGifs(gifList)
                             }
@@ -172,19 +203,17 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
     fun setDeleted(gifId: String) {
         Observable
-            .just(gifId)
-            .subscribeOn(Schedulers.io())
-            .subscribe {
-                database.gifItemDao().setGifDeleted(true, it)
-            }
-        Observable
-            .just(gifId)
-            .subscribeOn(Schedulers.io())
-            .subscribe {
-                val file = File("$dirPath$gifId.gif")
-                if (file.exists()) {
-                    file.delete()
+            .fromCallable {
+                database.gifItemDao().setGifDeleted(true, gifId)
+
+                File("$dirPath$gifId.gif").also {
+                    if (it.exists())
+                        it.delete()
                 }
+
+                stateRepository.deleteGifById(gifId)
             }
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 }

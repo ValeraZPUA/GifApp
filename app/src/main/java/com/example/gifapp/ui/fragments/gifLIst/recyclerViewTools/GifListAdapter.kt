@@ -58,20 +58,14 @@ class GifListAdapter(private val gifsList: ArrayList<GifItemEntity>,
         }
 
         fun bind(gifItemEntity: GifItemEntity) {
-            if (!gifItemEntity.is_deleted) {
-
-                Glide
+            Glide
+                .with(binding.root)
+                .load(gifItemEntity.image_url)
+                //.apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                .thumbnail(Glide
                     .with(binding.root)
-                    .load(gifItemEntity.image_url)
-                    //.apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE).skipMemoryCache(true))
-                    .thumbnail(Glide
-                        .with(binding.root)
-                        .load(R.raw.loader))
-                    .into(binding.ivGif)
-            } else {
-                itemView.layoutParams.height = 0
-            }
+                    .load(R.raw.loader))
+                .into(binding.ivGif)
         }
-
     }
 }

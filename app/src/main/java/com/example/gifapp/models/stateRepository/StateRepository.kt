@@ -1,7 +1,6 @@
 package com.example.gifapp.models.stateRepository
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.example.gifapp.db.entities.GifItemEntity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -11,6 +10,7 @@ import io.reactivex.schedulers.Schedulers
 class StateRepository {
 
     private var previousKeyWord: String = ""
+    private var offset: Int = 0
     private val gifList: ArrayList<GifItemEntity> = arrayListOf()
     private var isInterConnected = true
 
@@ -22,7 +22,12 @@ class StateRepository {
             .subscribe(this::setIsInternetConnected)
     }
     fun addGifs(newGifList: ArrayList<GifItemEntity>) {
-        gifList.addAll(newGifList)
+        newGifList.also {
+            gifList.addAll(it)
+
+            if (it.isEmpty())
+                resetOffset()
+        }
     }
 
     fun setKeyWord(newKeyWord: String) {
@@ -30,11 +35,7 @@ class StateRepository {
     }
 
     fun getGigList(): ArrayList<GifItemEntity> {
-        return ArrayList(gifList)
-    }
-
-    fun getOffset(): Int {
-        return gifList.size
+        return ArrayList(gifList.filter { !it.is_deleted })
     }
 
     fun getKeyWord(): String {
@@ -47,5 +48,23 @@ class StateRepository {
 
     private fun setIsInternetConnected(isConnected: Boolean) {
         isInterConnected = isConnected
+    }
+
+    fun increaseOffset(offset: Int) {
+        this.offset += offset
+    }
+
+    fun getOffset(): Int {
+        return offset
+    }
+
+    fun deleteGifById(gifId: String) {
+        gifList
+            .find { it.id == gifId }
+            .also { gifList.remove(it) }
+    }
+
+    private fun resetOffset() {
+        offset = 0
     }
 }

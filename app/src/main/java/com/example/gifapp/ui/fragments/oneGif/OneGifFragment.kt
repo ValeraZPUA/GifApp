@@ -51,6 +51,6 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
     }
 
     override fun onEndReached(offset: Int) {
-        viewModel.getGifs(null, offset)
+        viewModel.getGifs(null, null)
     }
 }

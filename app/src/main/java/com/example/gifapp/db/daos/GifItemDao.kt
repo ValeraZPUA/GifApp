@@ -12,6 +12,9 @@ interface GifItemDao {
     @Query("SELECT is_deleted FROM gif_items WHERE id = :gifId")
     fun isGifDeleted(gifId: String): Single<Boolean>
 
+    @Query("SELECT id FROM gif_items WHERE id IN (:gifList) AND is_deleted = :isDeleted")
+    fun getDeletedGifIdsList(gifList: ArrayList<String>, isDeleted: Boolean): Single<List<String>>
+
     @Query("UPDATE gif_items SET is_deleted = :isDelete WHERE id = :gifId")
     fun setGifDeleted(isDelete: Boolean, gifId: String)
 
