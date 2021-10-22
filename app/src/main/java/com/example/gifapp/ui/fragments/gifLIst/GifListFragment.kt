@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.gifapp.App
+import com.example.gifapp.BuildConfig
+import com.example.gifapp.R
 import com.example.gifapp.databinding.FragmentGifListBinding
 import com.example.gifapp.databinding.FragmentGifListBinding.inflate
 import com.example.gifapp.ui.fragments.gifLIst.recyclerViewTools.GifListAdapter
@@ -17,15 +21,20 @@ import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickListener, OnItemClickListener {
 
     private lateinit var binding: FragmentGifListBinding
-    private lateinit var viewModel: GifListViewModel
-
     private lateinit var adapter: GifListAdapter
-
     private var isSearchEnabled = false
+
+    @Inject
+    lateinit var viewModel: GifListViewModel
+
+    init {
+        App.appComponent.inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = inflate(inflater, container, false)
@@ -34,16 +43,15 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.initRequiredData(requireContext().cacheDir.absolutePath + BuildConfig.CACHE_DIR)
 
-        viewModel = ViewModelProvider(this).get(GifListViewModel::class.java)
-
-        adapter = GifListAdapter(viewModel.getGifList(), this, this, this)
-        binding.rvGifs.adapter = adapter
+        configRecycler()
+        setObservers()
 
         binding
             .etSearch
             .textChanges()
-            .debounce(1000,  TimeUnit.MILLISECONDS)
+            .debounce(1000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -53,8 +61,16 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
                 }
                 isSearchEnabled = true
             }
+    }
 
+    private fun setObservers() {
         viewModel.getGifsData().observe(viewLifecycleOwner, { adapter.notifyItemInserted(adapter.itemCount) })
+        viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner, { Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show() })
+    }
+
+    private fun configRecycler() {
+        adapter = GifListAdapter(viewModel.getGifList(), this, this, this)
+        binding.rvGifs.adapter = adapter
     }
 
     override fun onBottomReached() {

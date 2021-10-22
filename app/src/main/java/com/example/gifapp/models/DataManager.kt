@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
-import com.example.gifapp.App
 import com.example.gifapp.api.ApiInterface
 import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
@@ -26,10 +25,6 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     private lateinit var _gifsData: MutableLiveData<ArrayList<GifItemEntity>>
     private lateinit var dirPath: String
     private var stateRepository = StateRepository()
-
-    init {
-        App.appComponent.inject(this)
-    }
 
     fun initRequiredData(gifsLivaData: MutableLiveData<ArrayList<GifItemEntity>>, dirPathToDownload: String) {
         _gifsData = gifsLivaData
