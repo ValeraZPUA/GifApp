@@ -46,7 +46,7 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
     }
 
     private fun configViewPager() {
-        gifPagerAdapter = GifPagerAdapter(viewModel.getGifsList(), this)
+        gifPagerAdapter = GifPagerAdapter(viewModel.getGifList(), this)
         binding.vpGif.adapter = gifPagerAdapter
         binding.vpGif.currentItem = OneGifFragmentArgs.fromBundle(requireArguments()).gifItemPosition
     }
