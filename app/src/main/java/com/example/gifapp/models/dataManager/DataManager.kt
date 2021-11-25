@@ -1,9 +1,9 @@
 package com.example.gifapp.models.dataManager
 
-import android.annotation.SuppressLint
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
+import com.example.gifapp.utils.Utils
 import com.example.gifapp.api.ApiInterface
 import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
@@ -13,19 +13,25 @@ import com.example.gifapp.models.stateRepository.StateRepository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@SuppressLint("CheckResult")
 class DataManager @Inject constructor(private val apiInterface: ApiInterface,
-                                      private val database: AppDatabase) {
+                                      private val database: AppDatabase,
+                                      private val utils: Utils
+) {
 
     private lateinit var dirPath: String
     private val stateRepository: IStateRepository = StateRepository()
     private lateinit var iDataManager: IDataManager
+
+    private var getGifsDisposable: Disposable? = null
+    private var addGifListToDBDisposable: Disposable? = null
+    private var saveToInternalStorageDisposable: Disposable? = null
 
     fun initRequiredData(dirPathToDownload: String, iDataManager: IDataManager) {
         dirPath = dirPathToDownload
@@ -47,7 +53,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         }
 
         if (isInternetConnected) {
-            apiInterface
+            getGifsDisposable = apiInterface
                 .getGifs(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
                 .map { convertToDBEntity(it.data)}
                 .subscribeOn(Schedulers.io())
@@ -115,7 +121,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
     private fun addGifListToDB(gifList: ArrayList<GifItemEntity>) {
         if (gifList.isNotEmpty()) {
-            Observable
+            addGifListToDBDisposable = Observable
                 .just(gifList)
                 .subscribeOn(Schedulers.io())
                 .subscribe( { gifEntityList -> database.gifItemDao().insertGifs(gifEntityList) }, { error -> parseError(error) })
@@ -131,8 +137,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     }
 
     private fun saveToInternalStorage(gifList: ArrayList<GifItemEntity>) {
-
-        Observable
+        saveToInternalStorageDisposable = Observable
             .just(gifList)
             .subscribeOn(Schedulers.io())
             .subscribe {
@@ -216,5 +221,17 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
             }
             .subscribeOn(Schedulers.io())
             .subscribe()
+    }
+
+    fun stopAllRxRequests() {
+        if (!utils.isDisposed(addGifListToDBDisposable)) {
+            addGifListToDBDisposable?.dispose()
+        }
+        if (utils.isDisposed(getGifsDisposable)) {
+            getGifsDisposable?.dispose()
+        }
+        if (utils.isDisposed(saveToInternalStorageDisposable)) {
+            saveToInternalStorageDisposable?.dispose()
+        }
     }
 }

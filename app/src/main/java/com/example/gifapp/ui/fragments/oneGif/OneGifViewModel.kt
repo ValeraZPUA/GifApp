@@ -1,14 +1,12 @@
 package com.example.gifapp.ui.fragments.oneGif
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.dataManager.DataManager
 import com.example.gifapp.models.dataManager.IDataManager
 import javax.inject.Inject
 
-class OneGifViewModel @Inject constructor(private val dataManager: DataManager) : ViewModel(), IDataManager {
+class OneGifViewModel @Inject constructor(private val dataManager: DataManager) : ViewModel(), IDataManager, LifecycleObserver {
 
     private val gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
     private val showInternetConnectionError = MutableLiveData<Boolean>()
@@ -39,5 +37,10 @@ class OneGifViewModel @Inject constructor(private val dataManager: DataManager) 
 
     override fun returnGifList(gifList: ArrayList<GifItemEntity>) {
         gifsData.value = gifList
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    private fun stopAllRxRequests() {
+        dataManager.stopAllRxRequests()
     }
 }

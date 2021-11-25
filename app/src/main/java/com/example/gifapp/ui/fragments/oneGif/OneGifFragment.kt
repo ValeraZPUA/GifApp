@@ -34,6 +34,7 @@ class OneGifFragment : Fragment(), OnEndOfListReached {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.initRequiredData(requireContext().cacheDir.absolutePath + BuildConfig.CACHE_DIR)
+        lifecycle.addObserver(viewModel)
 
         configViewPager()
         setObservers()

@@ -1,6 +1,7 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.initRequiredData(requireContext().cacheDir.absolutePath + BuildConfig.CACHE_DIR)
+        lifecycle.addObserver(viewModel)
 
         configRecycler()
         setObservers()
@@ -86,6 +88,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     override fun onStop() {
         super.onStop()
+        Log.d("tag22", "onStop: Fr ")
         isSearchEnabled = false
         viewModel.getGifsData().value?.clear()
     }
