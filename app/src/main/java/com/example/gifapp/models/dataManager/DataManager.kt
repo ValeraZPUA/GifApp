@@ -8,6 +8,7 @@ import com.example.gifapp.api.ApiInterface
 import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
+import com.example.gifapp.models.stateRepository.IStateRepository
 import com.example.gifapp.models.stateRepository.StateRepository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,7 +24,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                                       private val database: AppDatabase) {
 
     private lateinit var dirPath: String
-    private var stateRepository = StateRepository()
+    private val stateRepository: IStateRepository = StateRepository()
     private lateinit var iDataManager: IDataManager
 
     fun initRequiredData(dirPathToDownload: String, iDataManager: IDataManager) {
@@ -32,7 +33,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     }
 
     fun getGifList(): ArrayList<GifItemEntity> {
-        return stateRepository.getGigList()
+        return stateRepository.getGifList()
     }
 
     fun getIsInternetConnected(): Boolean {
@@ -42,7 +43,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     fun getGifs(keyWord: String?, offset: Int?, isInternetConnected: Boolean) {
         if (keyWord != null) {
             stateRepository.setKeyWord(keyWord)
-            stateRepository.getGigList().clear()
+            stateRepository.clearGifList()
         }
 
         if (isInternetConnected) {
