@@ -88,7 +88,6 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
 
     override fun onStop() {
         super.onStop()
-        Log.d("tag22", "onStop: Fr ")
         isSearchEnabled = false
         viewModel.getGifsData().value?.clear()
     }

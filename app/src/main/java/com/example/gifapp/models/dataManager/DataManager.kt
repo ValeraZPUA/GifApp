@@ -10,6 +10,7 @@ import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.stateRepository.IStateRepository
 import com.example.gifapp.models.stateRepository.StateRepository
+import com.example.gifapp.utils.NetworkChecker
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
@@ -22,8 +23,8 @@ import javax.inject.Singleton
 @Singleton
 class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                                       private val database: AppDatabase,
-                                      private val utils: Utils
-) {
+                                      private val utils: Utils,
+                                      private val networkChecker: NetworkChecker) {
 
     private lateinit var dirPath: String
     private val stateRepository: IStateRepository = StateRepository()
@@ -43,7 +44,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     }
 
     fun getIsInternetConnected(): Boolean {
-        return stateRepository.getIsInternetConnected()
+        return networkChecker.getIsInternetConnected()
     }
 
     fun getGifs(keyWord: String?, offset: Int?, isInternetConnected: Boolean) {
@@ -227,11 +228,14 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         if (!utils.isDisposed(addGifListToDBDisposable)) {
             addGifListToDBDisposable?.dispose()
         }
-        if (utils.isDisposed(getGifsDisposable)) {
+        if (!utils.isDisposed(getGifsDisposable)) {
             getGifsDisposable?.dispose()
         }
-        if (utils.isDisposed(saveToInternalStorageDisposable)) {
+        if (!utils.isDisposed(saveToInternalStorageDisposable)) {
             saveToInternalStorageDisposable?.dispose()
+        }
+        if (!utils.isDisposed(networkChecker.getNetworkDisposable())) {
+            networkChecker.getNetworkDisposable()
         }
     }
 }
