@@ -124,7 +124,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         if (gifList.isNotEmpty()) {
             addGifListToDBDisposable = Observable
                 .just(gifList)
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe( { gifEntityList -> database.gifItemDao().insertGifs(gifEntityList) }, { error -> parseError(error) })
         }
     }
@@ -139,9 +139,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
 
     private fun saveToInternalStorage(gifList: ArrayList<GifItemEntity>) {
         saveToInternalStorageDisposable = Observable
-            .just(gifList)
-            .subscribeOn(Schedulers.io())
-            .subscribe {
+            .fromCallable {
                 gifList.forEach {
                     database
                         .gifItemDao()
@@ -159,6 +157,8 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
                         })
                 }
             }
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     private fun downloadGifTOInternalStorage(imageUrl: String, dirPath: String, fileName: String) {
