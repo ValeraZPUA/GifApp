@@ -6,7 +6,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class NetworkChecker @Inject constructor() {
+class NetworkChecker @Inject constructor(private val utils: Utils) {
 
     private var isInterConnected = true
 
@@ -24,7 +24,9 @@ class NetworkChecker @Inject constructor() {
         return isInterConnected
     }
 
-    fun getNetworkDisposable(): Disposable {
-        return networkDisposable
+    fun stopNetworkChecking() {
+        if (!utils.isDisposed(networkDisposable)) {
+            networkDisposable.dispose()
+        }
     }
 }

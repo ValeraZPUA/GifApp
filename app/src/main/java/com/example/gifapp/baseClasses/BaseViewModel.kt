@@ -5,7 +5,7 @@ import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.dataManager.DataManager
 import com.example.gifapp.models.dataManager.IDataManager
 
-open class BaseViewModel(private val dataManager: DataManager) : ViewModel(), IDataManager, LifecycleObserver {
+open class BaseViewModel(private val dataManager: DataManager) : ViewModel(), IDataManager.ViewModel, LifecycleObserver {
 
     private val gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
     private val showInternetConnectionError = MutableLiveData<Boolean>()
