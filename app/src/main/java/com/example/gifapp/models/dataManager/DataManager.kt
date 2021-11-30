@@ -3,36 +3,30 @@ package com.example.gifapp.models.dataManager
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
-import com.example.gifapp.utils.Utils
-import com.example.gifapp.api.ApiInterface
-import com.example.gifapp.api.models.gifs.gifItem.GifItem
 import com.example.gifapp.db.entities.GifItemEntity
-import com.example.gifapp.models.dataBaseHelper.DataBaseHelper
+import com.example.gifapp.models.DataBaseHelper
+import com.example.gifapp.models.NetworkHelper
 import com.example.gifapp.models.stateRepository.IStateRepository
 import com.example.gifapp.models.stateRepository.StateRepository
 import com.example.gifapp.utils.NetworkChecker
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataManager @Inject constructor(private val apiInterface: ApiInterface,
-                                      private val utils: Utils,
-                                      private val networkChecker: NetworkChecker,
-                                      private val dataBaseHelper: DataBaseHelper): IDataManager.DataBaseHelper {
+class DataManager @Inject constructor(private val networkChecker: NetworkChecker,
+                                      private val networkHelper: NetworkHelper,
+                                      private val dataBaseHelper: DataBaseHelper
+): IDataManager.Helper {
 
     private lateinit var dirPath: String
     private val stateRepository: IStateRepository = StateRepository()
     private lateinit var iDataManager: IDataManager.ViewModel
 
-    private var getGifsDisposable: Disposable? = null
-
     fun initRequiredData(dirPathToDownload: String, iDataManager: IDataManager.ViewModel) {
         dirPath = dirPathToDownload
         this.iDataManager = iDataManager
         dataBaseHelper.initInterface(this)
+        networkHelper.initInterface(this)
     }
 
     fun getGifList(): ArrayList<GifItemEntity> {
@@ -50,13 +44,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         }
 
         if (isInternetConnected) {
-            getGifsDisposable = apiInterface
-                .getGifs(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
-                .map { convertToDBEntity(it.data)}
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ gifList -> checkDeletedGifs(gifList) },
-                           { error -> parseError(error) } )
+            networkHelper.getGifs(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
         } else {
             if (keyWord != null && keyWord.isNotBlank()) {
                 dataBaseHelper.getGifList(keyWord)
@@ -66,23 +54,11 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
         }
     }
 
-    private fun checkDeletedGifs(gifList: ArrayList<GifItemEntity>) {
+    override fun checkDeletedGifs(gifList: ArrayList<GifItemEntity>) {
             val gifIdList: ArrayList<String> = arrayListOf()
                 gifList.forEach { gifIdList.add(it.id) }
 
         dataBaseHelper.getDeletedGifIdsList(gifList, gifIdList)
-    }
-
-    private fun convertToDBEntity(gifList: ArrayList<GifItem>): ArrayList<GifItemEntity> {
-        val gifListEntity: ArrayList<GifItemEntity> = arrayListOf()
-        gifList.forEach {
-            gifListEntity.add(GifItemEntity(it.id, it.title, it.images.original["url"]!!, false))
-        }
-        return gifListEntity
-    }
-
-    private fun parseError(error: Throwable) {
-        //TODO
     }
 
     fun setDeleted(gifId: String) {
@@ -92,9 +68,7 @@ class DataManager @Inject constructor(private val apiInterface: ApiInterface,
     fun stopAllRxRequests() {
         dataBaseHelper.stopAllRxRequests()
         networkChecker.stopNetworkChecking()
-        if (!utils.isDisposed(getGifsDisposable)) {
-            getGifsDisposable?.dispose()
-        }
+        networkHelper.stopAllRxRequests()
     }
 
     override fun updateStateRepositoryList(gifList: ArrayList<GifItemEntity>) {

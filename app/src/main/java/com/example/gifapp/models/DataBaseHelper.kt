@@ -1,4 +1,4 @@
-package com.example.gifapp.models.dataBaseHelper
+package com.example.gifapp.models
 
 import com.example.gifapp.db.AppDatabase
 import com.example.gifapp.db.entities.GifItemEntity
@@ -15,12 +15,12 @@ import javax.inject.Inject
 class DataBaseHelper @Inject constructor(private val utils: Utils,
                                          private val database: AppDatabase) {
 
-    private lateinit var iDataManager: IDataManager.DataBaseHelper
+    private lateinit var iDataManager: IDataManager.Helper
 
     private var addGifListToDBDisposable: Disposable? = null
     private var saveToInternalStorageDisposable: Disposable? = null
 
-    fun initInterface(iDataManager: IDataManager.DataBaseHelper) {
+    fun initInterface(iDataManager: IDataManager.Helper) {
         this.iDataManager = iDataManager
     }
 

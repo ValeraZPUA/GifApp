@@ -7,11 +7,12 @@ interface IDataManager {
         fun returnGifList(gifList: ArrayList<GifItemEntity>)
     }
 
-    interface DataBaseHelper {
+    interface Helper {
         fun updateStateRepositoryList(gifList: ArrayList<GifItemEntity>)
         fun returnGifList(gifList: ArrayList<GifItemEntity>)
         fun increaseStateRepositoryOffset(offsetSize: Int)
         fun downloadGifTOInternalStorage(imageUrl: String, imageTitle: String)
         fun deleteGifFromStateRepositoryById(gifId: String)
+        fun checkDeletedGifs(gifList: ArrayList<GifItemEntity>)
     }
 }
