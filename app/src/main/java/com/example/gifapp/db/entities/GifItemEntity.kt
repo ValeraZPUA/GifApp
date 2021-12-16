@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "gif_items")
-class GifItemEntity(
+data class GifItemEntity(
     @PrimaryKey
     val id: String,
     val gif_title: String,

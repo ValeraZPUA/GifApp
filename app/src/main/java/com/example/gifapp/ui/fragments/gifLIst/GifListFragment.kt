@@ -1,7 +1,6 @@
 package com.example.gifapp.ui.fragments.gifLIst
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +56,7 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 if (isSearchEnabled) {
-                    adapter.clearGifList()
+                    adapter.submitList(arrayListOf())
                     viewModel.getGifs(it.toString(), 0)
                 }
                 isSearchEnabled = true
@@ -65,12 +64,17 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     }
 
     private fun setObservers() {
-        viewModel.getGifsData().observe(viewLifecycleOwner, { adapter.addItems(it) })
+        viewModel.getGifsData().observe(viewLifecycleOwner, {
+            val tempList =  adapter.currentList.toMutableList()
+            tempList.addAll(it)
+            adapter.submitList(tempList)
+        })
         viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner, { Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show() })
     }
 
     private fun configRecycler() {
-        adapter = GifListAdapter(viewModel.getGifList(), this, this, this)
+        adapter = GifListAdapter(this, this, this)
+        adapter.submitList(viewModel.getGifList())
         binding.rvGifs.adapter = adapter
     }
 
