@@ -57,6 +57,7 @@ class DataBaseHelper @Inject constructor(private val utils: Utils,
 
                             if (gifList.lastIndex == i) {
                                 iDataManager.updateStateRepositoryList(gifList)
+                                iDataManager.returnGifList(gifList)
                             }
 
                         }
@@ -64,6 +65,7 @@ class DataBaseHelper @Inject constructor(private val utils: Utils,
                         override fun onError(e: Throwable) {
                             if (gifList.lastIndex == i) {
                                 iDataManager.updateStateRepositoryList(gifList)
+                                iDataManager.returnGifList(gifList)
                             }
                         }
                     })
