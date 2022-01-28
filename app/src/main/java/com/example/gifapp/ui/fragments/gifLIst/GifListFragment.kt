@@ -64,12 +64,14 @@ class GifListFragment : Fragment(), OnBottomReachedListener, OnItemLongClickList
     }
 
     private fun setObservers() {
-        viewModel.getGifsData().observe(viewLifecycleOwner, {
-            val tempList =  adapter.currentList.toMutableList()
+        viewModel.getGifsData().observe(viewLifecycleOwner) {
+            val tempList = adapter.currentList.toMutableList()
             tempList.addAll(it)
             adapter.submitList(tempList)
-        })
-        viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner, { Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show() })
+        }
+        viewModel.getIsInternetConnectionError().observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun configRecycler() {

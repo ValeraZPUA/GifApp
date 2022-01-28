@@ -5,21 +5,24 @@ import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.dataManager.DataManager
 import com.example.gifapp.models.dataManager.IDataManager
 
-open class BaseViewModel(private val dataManager: DataManager) : ViewModel(), IDataManager.ViewModel, LifecycleObserver {
+open class BaseViewModel(
+    private val dataManager: DataManager
+    ) : ViewModel(), IDataManager.ViewModel, LifecycleObserver {
 
     private val gifsData = MutableLiveData<ArrayList<GifItemEntity>>()
     private val showInternetConnectionError = MutableLiveData<Boolean>()
 
     fun getGifs(keyWord: String?, offset: Int?) {
         val isInternetConnected = dataManager.getIsInternetConnected()
+        dataManager.setIsInternetConnected(isInternetConnected)
         if (!isInternetConnected) {
-            showInternetConnectionError.value = true
+            showInternetConnectionError.value = isInternetConnected
         }
-        dataManager.getGifs(keyWord, offset, isInternetConnected)
+        dataManager.getGifList(keyWord, offset)
     }
 
     fun getGifList(): ArrayList<GifItemEntity> {
-        return dataManager.getGifList()
+        return dataManager.getGifListFromStateRepository()
     }
 
     fun getGifsData(): LiveData<ArrayList<GifItemEntity>> {

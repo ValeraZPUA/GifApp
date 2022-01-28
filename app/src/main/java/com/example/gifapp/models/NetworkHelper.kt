@@ -10,8 +10,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class NetworkHelper @Inject constructor(private val utils: Utils,
-                                        private val apiInterface: ApiInterface) {
+class NetworkHelper @Inject constructor(
+    private val utils: Utils,
+    private val apiInterface: ApiInterface): DataRepo {
 
     private var getGifsDisposable: Disposable? = null
     private lateinit var iDataManager: IDataManager.Helper
@@ -20,9 +21,9 @@ class NetworkHelper @Inject constructor(private val utils: Utils,
         this.iDataManager = iDataManager
     }
 
-    fun getGifs(keyWord: String, offset: Int) {
+    override fun getGifList(keyWord: String?, offset: Int?) {
         getGifsDisposable = apiInterface
-            .getGifs(keyWord, offset)
+            .getGifs(keyWord!!, offset!!)
             .map { convertToDBEntity(it.data)}
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

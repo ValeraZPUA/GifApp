@@ -5,6 +5,7 @@ import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.example.gifapp.db.entities.GifItemEntity
 import com.example.gifapp.models.DataBaseHelper
+import com.example.gifapp.models.DataRepo
 import com.example.gifapp.models.NetworkHelper
 import com.example.gifapp.models.stateRepository.IStateRepository
 import com.example.gifapp.models.stateRepository.StateRepository
@@ -16,11 +17,12 @@ import javax.inject.Singleton
 class DataManager @Inject constructor(private val networkChecker: NetworkChecker,
                                       private val networkHelper: NetworkHelper,
                                       private val dataBaseHelper: DataBaseHelper
-): IDataManager.Helper {
+): IDataManager.Helper, DataRepo {
 
     private lateinit var dirPath: String
     private val stateRepository: IStateRepository = StateRepository()
     private lateinit var iDataManager: IDataManager.ViewModel
+    private var isInternetConnected = true
 
     fun initRequiredData(dirPathToDownload: String, iDataManager: IDataManager.ViewModel) {
         dirPath = dirPathToDownload
@@ -29,7 +31,7 @@ class DataManager @Inject constructor(private val networkChecker: NetworkChecker
         networkHelper.initInterface(this)
     }
 
-    fun getGifList(): ArrayList<GifItemEntity> {
+    fun getGifListFromStateRepository(): ArrayList<GifItemEntity> {
         return stateRepository.getGifList()
     }
 
@@ -37,17 +39,17 @@ class DataManager @Inject constructor(private val networkChecker: NetworkChecker
         return networkChecker.getIsInternetConnected()
     }
 
-    fun getGifs(keyWord: String?, offset: Int?, isInternetConnected: Boolean) {
+    override fun getGifList(keyWord: String?, offset: Int?) {
         if (keyWord != null) {
             stateRepository.setKeyWord(keyWord)
             stateRepository.clearGifList()
         }
 
         if (isInternetConnected) {
-            networkHelper.getGifs(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
+            networkHelper.getGifList(keyWord ?: stateRepository.getKeyWord(), offset ?: stateRepository.getOffset())
         } else {
             if (keyWord != null && keyWord.isNotBlank()) {
-                dataBaseHelper.getGifList(keyWord)
+                dataBaseHelper.getGifList(keyWord, offset ?: stateRepository.getOffset())
             } else {
                 dataBaseHelper.addGifList(ArrayList())
             }
@@ -96,5 +98,9 @@ class DataManager @Inject constructor(private val networkChecker: NetworkChecker
 
     override fun deleteGifFromStateRepositoryById(gifId: String) {
         stateRepository.deleteGifById(gifId)
+    }
+
+    fun setIsInternetConnected(isInternetConnected: Boolean) {
+        this.isInternetConnected = isInternetConnected
     }
 }

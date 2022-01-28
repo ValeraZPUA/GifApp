@@ -12,8 +12,9 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import javax.inject.Inject
 
-class DataBaseHelper @Inject constructor(private val utils: Utils,
-                                         private val database: AppDatabase) {
+class DataBaseHelper @Inject constructor(
+    private val utils: Utils,
+    private val database: AppDatabase): DataRepo {
 
     private lateinit var iDataManager: IDataManager.Helper
 
@@ -24,7 +25,7 @@ class DataBaseHelper @Inject constructor(private val utils: Utils,
         this.iDataManager = iDataManager
     }
 
-    fun getGifList(keyWord: String) {
+    override fun getGifList(keyWord: String?, offset: Int?) {
         database
             .gifItemDao()
             .searchInDB("%$keyWord%")
